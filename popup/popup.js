@@ -4,27 +4,22 @@ const { requestDownload, normalizeUrl, isDownloadableUrl } = self.RavenPaths;
 
 const rowsEl = document.getElementById('rows');
 const statusEl = document.getElementById('status');
-const datalistEl = document.getElementById('recent-folders');
+
 
 function addRow(url = '', folder = '') {
   const row = document.createElement('div');
   row.className = 'row';
   row.innerHTML = `
     <input class="url" type="url" placeholder="https://example.com/file.zip" value="">
-    <input class="folder" type="text" placeholder="folder" list="recent-folders" value="">
+    <div class="folder-wrap"><input class="folder" type="text" placeholder="folder"></div>
     <button class="remove" title="Remove row">&times;</button>`;
+  const folderInput = row.querySelector('.folder');
+  folderInput.value = folder;
+  self.RavenFolderPicker.attach(folderInput);
   row.querySelector('.url').value = url;
-  row.querySelector('.folder').value = folder;
   row.querySelector('.remove').addEventListener('click', () => row.remove());
   rowsEl.appendChild(row);
   return row;
-}
-
-async function loadRecentFolders() {
-  const { recentFolders = [] } = await chrome.storage.local.get({ recentFolders: [] });
-  datalistEl.innerHTML = recentFolders
-    .map((f) => `<option value="${escapeHtml(f)}"></option>`)
-    .join('');
 }
 
 function escapeHtml(s) {
@@ -54,7 +49,9 @@ async function downloadAll() {
     return;
   }
 
-  const results = await Promise.all(jobs.map((j) => requestDownload(j.url, j.folder)));
+  const results = await Promise.all(
+    jobs.map((j) => requestDownload(j.url, j.folder, askEachEl.checked))
+  );
   const failures = results.filter((r) => r && r.error);
   const started = results.length - failures.length;
   if (failures.length) {
@@ -66,6 +63,14 @@ async function downloadAll() {
     setStatus(`${started} download${started === 1 ? '' : 's'} started.`);
   }
 }
+
+const askEachEl = document.getElementById('ask-each');
+chrome.storage.local.get({ askEachTime: false }).then(({ askEachTime }) => {
+  askEachEl.checked = askEachTime;
+});
+askEachEl.addEventListener('change', () => {
+  chrome.storage.local.set({ askEachTime: askEachEl.checked });
+});
 
 document.getElementById('add-row').addEventListener('click', () => addRow());
 document.getElementById('download-all').addEventListener('click', downloadAll);
@@ -114,4 +119,3 @@ const params = new URLSearchParams(location.search);
 addRow(params.get('url') || '', params.get('folder') || '');
 addRow();
 addRow();
-loadRecentFolders();

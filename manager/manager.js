@@ -7,7 +7,6 @@ const listEl = document.getElementById('download-list');
 const emptyEl = document.getElementById('empty');
 const rowsEl = document.getElementById('rows');
 const addStatusEl = document.getElementById('add-status');
-const datalistEl = document.getElementById('recent-folders');
 const filterEl = document.getElementById('filter');
 
 let items = [];
@@ -58,10 +57,12 @@ function addRow(url = '', folder = '') {
   row.className = 'row';
   row.innerHTML = `
     <input class="url" type="url" placeholder="https://example.com/file.zip">
-    <input class="folder" type="text" placeholder="folder (e.g. work/reports)" list="recent-folders">
+    <div class="folder-wrap"><input class="folder" type="text" placeholder="folder (e.g. work/reports)"></div>
     <button class="remove" title="Remove row">&times;</button>`;
   row.querySelector('.url').value = url;
-  row.querySelector('.folder').value = folder;
+  const folderInput = row.querySelector('.folder');
+  folderInput.value = folder;
+  self.RavenFolderPicker.attach(folderInput);
   row.querySelector('.remove').addEventListener('click', () => row.remove());
   rowsEl.appendChild(row);
   return row;
@@ -84,7 +85,9 @@ async function downloadAll() {
     addStatusEl.innerHTML = `<span class="err">Unsupported URL: ${escapeHtml(bad.url)}</span>`;
     return;
   }
-  const results = await Promise.all(jobs.map((j) => requestDownload(j.url, j.folder)));
+  const results = await Promise.all(
+    jobs.map((j) => requestDownload(j.url, j.folder, askEachEl.checked))
+  );
   const failures = results.filter((r) => r && r.error);
   const started = results.length - failures.length;
   addStatusEl.innerHTML = failures.length
@@ -144,13 +147,22 @@ function renderRow(item) {
       <span class="file-name" title="${escapeHtml(item.filename || '')}">${escapeHtml(name)}</span>
       <span class="file-url" title="${escapeHtml(item.finalUrl || item.url || '')}">${escapeHtml(item.finalUrl || item.url || '')}</span>
     </td>
-    <td><span class="folder-name">${escapeHtml(folder)}</span></td>
+    <td>${
+      folder && item.exists
+        ? `<button class="folder-name folder-link" title="Show in folder">${escapeHtml(folder)}</button>`
+        : `<span class="folder-name">${escapeHtml(folder)}</span>`
+    }</td>
     <td>
       <div class="progress-track"><div class="progress-bar ${barClass}" style="width:${pct ?? (inProgress ? 15 : item.state === 'complete' ? 100 : 0)}%"></div></div>
       <div class="progress-meta">${pct !== null ? pct + '% · ' : ''}${formatBytes(done)}${total > 0 ? ' / ' + formatBytes(total) : ''}</div>
     </td>
     <td><span class="state ${item.state}">${stateLabel(item)}</span></td>
     <td class="col-actions"></td>`;
+
+  const folderLink = tr.querySelector('.folder-link');
+  if (folderLink) {
+    folderLink.addEventListener('click', () => chrome.downloads.show(item.id));
+  }
 
   const actions = tr.querySelector('.col-actions');
   const addBtn = (label, title, fn, cls = 'icon-btn') => {
@@ -199,6 +211,14 @@ setInterval(() => {
 
 filterEl.addEventListener('input', scheduleRefresh);
 
+const askEachEl = document.getElementById('ask-each');
+chrome.storage.local.get({ askEachTime: false }).then(({ askEachTime }) => {
+  askEachEl.checked = askEachTime;
+});
+askEachEl.addEventListener('change', () => {
+  chrome.storage.local.set({ askEachTime: askEachEl.checked });
+});
+
 document.getElementById('add-row').addEventListener('click', () => addRow());
 document.getElementById('download-all').addEventListener('click', downloadAll);
 
@@ -217,11 +237,5 @@ const prefill = params.get('add');
 if (prefill) addRow(prefill, '');
 addRow();
 addRow();
-
-chrome.storage.local.get({ recentFolders: [] }).then(({ recentFolders }) => {
-  datalistEl.innerHTML = recentFolders
-    .map((f) => `<option value="${escapeHtml(f)}"></option>`)
-    .join('');
-});
 
 refresh();
