@@ -1,0 +1,74 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 28px 32px 60px;
+  font: 13px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #14171c;
+  color: #e6e9ee;
+  max-width: 760px;
+}
+
+h1 { font-size: 18px; margin: 0 0 8px; }
+h2 { font-size: 13px; margin: 28px 0 6px; }
+
+.hint { color: #8b94a3; margin: 0 0 16px; }
+.hint code, .examples code { color: #aab4c5; }
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #8b94a3;
+  padding: 6px 8px;
+  border-bottom: 1px solid #2c333d;
+}
+td { padding: 6px 8px; border-bottom: 1px solid #21262f; }
+
+input[type="text"], select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #2c333d;
+  border-radius: 6px;
+  background: #1b2028;
+  color: #e6e9ee;
+  font-size: 12px;
+}
+input:focus, select:focus { outline: none; border-color: #6d8dff; }
+
+button {
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  background: #262d38;
+  color: #c8d0dd;
+}
+button:hover { background: #323b49; }
+.primary { background: #6d8dff; color: #0d1117; font-weight: 600; }
+.primary:hover { background: #88a2ff; }
+
+.remove {
+  background: none;
+  color: #5b6474;
+  padding: 0;
+  font-size: 16px;
+}
+.remove:hover { color: #ff7a7a; background: none; }
+
+.actions { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
+#status { font-size: 11px; color: #4fc38a; }
+
+.examples { color: #8b94a3; margin: 0; padding-left: 18px; }
+.examples li { margin: 4px 0; }

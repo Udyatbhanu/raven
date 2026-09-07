@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1>Raven</h1>
+    <button id="open-manager" class="link" title="Open full download manager">Manager</button>
+  </header>
+
+  <p class="hint">One URL + folder per row. Folders are created inside <code>~/Downloads</code>.</p>
+
+  <div id="rows"></div>
+
+  <datalist id="recent-folders"></datalist>
+
+  <div id="bulk-area" hidden>
+    <textarea id="bulk-text" rows="4" placeholder="One per line: url&#9;folder&#10;https://example.com/a.zip&#9;work&#10;https://example.com/b.zip"></textarea>
+    <button id="bulk-import" class="secondary">Import into rows</button>
+  </div>
+
+  <div class="actions">
+    <button id="add-row" class="secondary">+ Add row</button>
+    <button id="paste-list" class="secondary" title="Paste one URL per line">Bulk paste</button>
+    <button id="download-all" class="primary">Download all</button>
+  </div>
+
+  <div id="status" role="status"></div>
+
+  <script src="../shared/paths.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

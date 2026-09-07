@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Raven Download Manager</title>
+  <link rel="stylesheet" href="manager.css">
+</head>
+<body>
+  <header>
+    <h1>Raven Download Manager</h1>
+    <div class="header-actions">
+      <input id="filter" type="search" placeholder="Filter downloads…">
+      <button id="clear-finished" class="secondary">Clear finished</button>
+      <button id="options" class="secondary">Folder rules</button>
+    </div>
+  </header>
+
+  <section class="add-panel">
+    <h2>New downloads <span class="sub">— one URL + folder per row; folders are created inside <code>~/Downloads</code></span></h2>
+    <div id="rows"></div>
+    <datalist id="recent-folders"></datalist>
+    <div class="actions">
+      <button id="add-row" class="secondary">+ Add row</button>
+      <button id="download-all" class="primary">Download all</button>
+      <span id="add-status" role="status"></span>
+    </div>
+  </section>
+
+  <section>
+    <table id="downloads">
+      <thead>
+        <tr>
+          <th class="col-name">File</th>
+          <th class="col-folder">Folder</th>
+          <th class="col-progress">Progress</th>
+          <th class="col-state">State</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="download-list"></tbody>
+    </table>
+    <p id="empty" class="empty" hidden>No downloads yet.</p>
+  </section>
+
+  <script src="../shared/paths.js"></script>
+  <script src="manager.js"></script>
+</body>
+</html>
