@@ -58,6 +58,7 @@ routing each one to its own folder — plus automatic folder rules, a right-clic
 | `manifest.json` | MV3 manifest (`downloads`, `storage`, `contextMenus`) |
 | `background.js` | Service worker: routing, rules, context menu, messaging |
 | `shared/paths.js` | Folder sanitization + URL helpers shared by all contexts |
+| `shared/folderpicker.js` | Folder dropdown picker (recent + history-known folders) |
 | `popup/` | Quick multi-download UI |
 | `manager/` | Full download manager page |
 | `options/` | Routing-rules settings page |
