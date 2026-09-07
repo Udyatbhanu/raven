@@ -14,7 +14,10 @@
 
   <div id="rows"></div>
 
-  <datalist id="recent-folders"></datalist>
+  <label class="ask-row">
+    <input type="checkbox" id="ask-each">
+    Ask where to save (native dialog)
+  </label>
 
   <div id="bulk-area" hidden>
     <textarea id="bulk-text" rows="4" placeholder="One per line: url&#9;folder&#10;https://example.com/a.zip&#9;work&#10;https://example.com/b.zip"></textarea>
@@ -30,6 +33,7 @@
   <div id="status" role="status"></div>
 
   <script src="../shared/paths.js"></script>
+  <script src="../shared/folderpicker.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

@@ -130,7 +130,7 @@ chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
 
 // ---------- downloads ----------
 
-async function startDownload(rawUrl, folder) {
+async function startDownload(rawUrl, folder, saveAs) {
   const url = normalizeUrl(rawUrl);
   if (!isDownloadableUrl(url)) {
     return { error: `Invalid or unsupported URL: ${rawUrl}` };
@@ -141,7 +141,7 @@ async function startDownload(rawUrl, folder) {
     const id = await chrome.downloads.download({
       url,
       conflictAction: 'uniquify',
-      saveAs: false,
+      saveAs: !!saveAs,
     });
     rememberFolder(clean);
     return { id, url, folder: clean };
@@ -154,7 +154,7 @@ async function startDownload(rawUrl, folder) {
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg && msg.type === 'raven:download') {
-    startDownload(msg.url, msg.folder).then(sendResponse);
+    startDownload(msg.url, msg.folder, msg.saveAs).then(sendResponse);
     return true; // async response
   }
   return false;

@@ -18,9 +18,12 @@
   <section class="add-panel">
     <h2>New downloads <span class="sub">— one URL + folder per row; folders are created inside <code>~/Downloads</code></span></h2>
     <div id="rows"></div>
-    <datalist id="recent-folders"></datalist>
     <div class="actions">
       <button id="add-row" class="secondary">+ Add row</button>
+      <label class="ask-row">
+        <input type="checkbox" id="ask-each">
+        Ask where to save (native dialog)
+      </label>
       <button id="download-all" class="primary">Download all</button>
       <span id="add-status" role="status"></span>
     </div>
@@ -43,6 +46,7 @@
   </section>
 
   <script src="../shared/paths.js"></script>
+  <script src="../shared/folderpicker.js"></script>
   <script src="manager.js"></script>
 </body>
 </html>

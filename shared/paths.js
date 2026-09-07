@@ -47,11 +47,29 @@
     }
   }
 
+  // Given an absolute download path, return the folder relative to the
+  // user's Downloads directory ('a/b', or '' for files directly in it or
+  // paths that can't be recognized).
+  function folderBelowDownloads(filename) {
+    if (!filename) return '';
+    const segs = String(filename).split(/[\\/]+/).filter(Boolean);
+    for (let i = segs.length - 2; i >= 0; i--) {
+      if (/^downloads?$/i.test(segs[i])) return segs.slice(i + 1, -1).join('/');
+    }
+    return '';
+  }
+
   // Ask the service worker to start a download routed to `folder` (a path
-  // relative to the Downloads directory). Resolves with { id } or { error }.
-  function requestDownload(url, folder) {
+  // relative to the Downloads directory). `saveAs` opens Chrome's native
+  // Save As dialog prefilled with the routed name. Resolves { id } | { error }.
+  function requestDownload(url, folder, saveAs) {
     return chrome.runtime
-      .sendMessage({ type: 'raven:download', url, folder: sanitizeFolder(folder) })
+      .sendMessage({
+        type: 'raven:download',
+        url,
+        folder: sanitizeFolder(folder),
+        saveAs: !!saveAs,
+      })
       .catch((err) => ({ error: err.message || String(err) }));
   }
 
@@ -62,6 +80,7 @@
     normalizeUrl,
     isDownloadableUrl,
     requestDownload,
+    folderBelowDownloads,
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

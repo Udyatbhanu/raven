@@ -36,9 +36,18 @@ routing each one to its own folder — plus automatic folder rules, a right-clic
 ## Usage
 
 - **Popup / manager "New downloads"**: one URL + folder per row → *Download all*.
-  The "Bulk paste" button in the popup accepts one `url<space-or-tab>folder`
-  pair per line (folders may contain spaces).
+  Click a folder field (or its `▾`) to pick from known folders — recent folders
+  plus every subfolder already present under `~/Downloads`. Typing a new name
+  creates that folder. The "Bulk paste" button in the popup accepts one
+  `url<space-or-tab>folder` pair per line (folders may contain spaces).
+- **Ask where to save**: the "Ask where to save (native dialog)" toggle in the
+  popup/manager starts each download with Chrome's real Save As dialog, so you
+  can pick any folder by hand (including outside `~/Downloads`). Chrome does
+  not allow extensions to open a directory picker directly — this is the
+  native-dialog path.
 - **Context menu**: right-click a link/media → *Download with Raven to folder*.
+- **Manager folder column**: click a download's folder to reveal the file in
+  your OS file manager.
 - **Rules**: extension icon → right-click → *Options* (or the "Folder rules"
   button on the manager page).
 
@@ -49,6 +58,7 @@ routing each one to its own folder — plus automatic folder rules, a right-clic
 | `manifest.json` | MV3 manifest (`downloads`, `storage`, `contextMenus`) |
 | `background.js` | Service worker: routing, rules, context menu, messaging |
 | `shared/paths.js` | Folder sanitization + URL helpers shared by all contexts |
+| `shared/folderpicker.js` | Folder dropdown picker (recent + history-known folders) |
 | `popup/` | Quick multi-download UI |
 | `manager/` | Full download manager page |
 | `options/` | Routing-rules settings page |
