@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Queue up multiple downloads at once and route each one to a different folder inside your Downloads directory. Includes folder routing rules, a right-click \"download to folder\" menu, and a full download manager page.",
   "minimum_chrome_version": "102",
-  "permissions": ["downloads", "storage", "contextMenus"],
+  "permissions": ["downloads", "storage", "contextMenus", "clipboardRead"],
   "background": {
     "service_worker": "background.js"
   },

@@ -53,14 +53,21 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (changes.recentFolders) rebuildContextMenus();
 });
 
+// Serialized: concurrent downloads must not clobber each other's updates.
+let folderWriteQueue = Promise.resolve();
+
 function rememberFolder(folder) {
   const clean = sanitizeFolder(folder);
   if (!clean) return;
-  const list = [clean, ...settings.recentFolders.filter((f) => f !== clean)].slice(
-    0,
-    10
-  );
-  chrome.storage.local.set({ recentFolders: list });
+  folderWriteQueue = folderWriteQueue
+    .then(async () => {
+      const { recentFolders = [] } = await chrome.storage.local.get({
+        recentFolders: [],
+      });
+      const list = [clean, ...recentFolders.filter((f) => f !== clean)].slice(0, 10);
+      await chrome.storage.local.set({ recentFolders: list });
+    })
+    .catch(() => {});
 }
 
 // ---------- filename routing ----------
@@ -158,38 +165,56 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 const PARENT_MENU_ID = 'raven-download-to';
 const PICK_MENU_ID = 'raven-download-pick';
 const FOLDER_MENU_PREFIX = 'raven-folder-';
+const MENU_CONTEXTS = ['link', 'image', 'audio', 'video'];
+
+function createMenuItem(props) {
+  return new Promise((resolve) => {
+    chrome.contextMenus.create(props, () => {
+      void chrome.runtime.lastError;
+      resolve();
+    });
+  });
+}
+
+// Serialized: removeAll is async, so overlapping rebuilds would race and
+// create duplicate menu IDs.
+let menuRebuildQueue = Promise.resolve();
 
 function rebuildContextMenus() {
-  chrome.contextMenus.removeAll(() => {
-    chrome.contextMenus.create({
-      id: PARENT_MENU_ID,
-      title: 'Download with Raven to folder',
-      contexts: ['link', 'image', 'audio', 'video'],
-    });
-    const folders = settings.recentFolders;
-    if (folders.length) {
-      folders.forEach((folder, i) => {
-        chrome.contextMenus.create({
+  menuRebuildQueue = menuRebuildQueue
+    .then(async () => {
+      await new Promise((resolve) => chrome.contextMenus.removeAll(resolve));
+      await createMenuItem({
+        id: PARENT_MENU_ID,
+        title: 'Download with Raven to folder',
+        contexts: MENU_CONTEXTS,
+      });
+      const folders = settings.recentFolders;
+      for (const [i, folder] of folders.entries()) {
+        await createMenuItem({
           id: `${FOLDER_MENU_PREFIX}${i}`,
           parentId: PARENT_MENU_ID,
           title: folder,
-          contexts: ['link', 'image', 'audio', 'video'],
+          contexts: MENU_CONTEXTS,
         });
-      });
-      chrome.contextMenus.create({
-        id: 'raven-menu-divider',
+      }
+      if (folders.length) {
+        await createMenuItem({
+          id: 'raven-menu-divider',
+          parentId: PARENT_MENU_ID,
+          type: 'separator',
+          contexts: MENU_CONTEXTS,
+        });
+      }
+      await createMenuItem({
+        id: PICK_MENU_ID,
         parentId: PARENT_MENU_ID,
-        type: 'separator',
-        contexts: ['link', 'image', 'audio', 'video'],
+        title: 'Choose folder…',
+        contexts: MENU_CONTEXTS,
       });
-    }
-    chrome.contextMenus.create({
-      id: PICK_MENU_ID,
-      parentId: PARENT_MENU_ID,
-      title: 'Choose folder…',
-      contexts: ['link', 'image', 'audio', 'video'],
-    });
-  });
+    })
+    .catch(() => {});
+  return menuRebuildQueue;
 }
 
 chrome.contextMenus.onClicked.addListener((info) => {

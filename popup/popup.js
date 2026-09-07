@@ -70,23 +70,40 @@ async function downloadAll() {
 document.getElementById('add-row').addEventListener('click', () => addRow());
 document.getElementById('download-all').addEventListener('click', downloadAll);
 
+const bulkArea = document.getElementById('bulk-area');
+const bulkText = document.getElementById('bulk-text');
+
+function importBulkText() {
+  const lines = bulkText.value
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  for (const line of lines) {
+    // "url folder with spaces", "url<tab>folder", or just "url"
+    const m = line.match(/^(\S+)(?:\s+(.*))?$/);
+    if (m) addRow(m[1], m[2] || '');
+  }
+  if (lines.length) {
+    bulkArea.hidden = true;
+    bulkText.value = '';
+  } else {
+    setStatus('No URLs found in pasted text.');
+  }
+}
+
 document.getElementById('paste-list').addEventListener('click', async () => {
+  bulkArea.hidden = !bulkArea.hidden;
+  if (bulkArea.hidden) return;
+  bulkText.focus();
   try {
     const text = await navigator.clipboard.readText();
-    const lines = text
-      .split(/\r?\n/)
-      .map((l) => l.trim())
-      .filter(Boolean);
-    for (const line of lines) {
-      // "url folder" or "url<tab>folder" or just "url"
-      const [url, folder = ''] = line.split(/[\t ]/, 2);
-      addRow(url, folder);
-    }
-    if (!lines.length) setStatus('Clipboard has no URLs.');
+    if (text.trim()) bulkText.value = text;
   } catch {
-    setStatus('<span class="err">Clipboard read blocked — paste into a row instead.</span>');
+    // Clipboard read unavailable — user pastes into the textarea manually.
   }
 });
+
+document.getElementById('bulk-import').addEventListener('click', importBulkText);
 
 document.getElementById('open-manager').addEventListener('click', () => {
   chrome.tabs.create({ url: chrome.runtime.getURL('manager/manager.html') });

@@ -163,11 +163,9 @@ function renderRow(item) {
   };
 
   if (inProgress) {
-    if (item.canResume) {
-      addBtn(item.paused ? '▶' : '⏸', item.paused ? 'Resume' : 'Pause', (i) =>
-        i.paused ? chrome.downloads.resume(i.id) : chrome.downloads.pause(i.id)
-      );
-    }
+    addBtn(item.paused ? '▶' : '⏸', item.paused ? 'Resume' : 'Pause', (i) =>
+      i.paused ? chrome.downloads.resume(i.id) : chrome.downloads.pause(i.id)
+    );
     addBtn('✕', 'Cancel', (i) => chrome.downloads.cancel(i.id));
   } else {
     if (item.state === 'complete' && item.exists) {

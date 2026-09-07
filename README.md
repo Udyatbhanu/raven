@@ -36,8 +36,8 @@ routing each one to its own folder — plus automatic folder rules, a right-clic
 ## Usage
 
 - **Popup / manager "New downloads"**: one URL + folder per row → *Download all*.
-  The "Paste list" button in the popup accepts one `url<space-or-tab>folder`
-  pair per line.
+  The "Bulk paste" button in the popup accepts one `url<space-or-tab>folder`
+  pair per line (folders may contain spaces).
 - **Context menu**: right-click a link/media → *Download with Raven to folder*.
 - **Rules**: extension icon → right-click → *Options* (or the "Folder rules"
   button on the manager page).
