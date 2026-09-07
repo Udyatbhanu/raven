@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Raven — Folder Rules</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <h1>Folder routing rules</h1>
+  <p class="hint">
+    Downloads you start yourself (not through Raven) are filed into these folders
+    automatically. Folders are created inside <code>~/Downloads</code>.
+    The first matching rule wins.
+  </p>
+
+  <label class="toggle">
+    <input type="checkbox" id="routing-enabled">
+    Route downloads using the rules below
+  </label>
+
+  <table id="rules-table">
+    <thead>
+      <tr>
+        <th>When</th>
+        <th>Matches</th>
+        <th>Save to folder</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="rules"></tbody>
+  </table>
+
+  <div class="actions">
+    <button id="add-rule" class="secondary">+ Add rule</button>
+    <button id="save" class="primary">Save</button>
+    <span id="status" role="status"></span>
+  </div>
+
+  <h2>Examples</h2>
+  <ul class="examples">
+    <li>Extension <code>pdf</code> → <code>docs/pdfs</code></li>
+    <li>URL contains <code>github.com</code> → <code>dev</code></li>
+    <li>MIME type <code>image/</code> → <code>images</code></li>
+  </ul>
+
+  <script src="../shared/paths.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

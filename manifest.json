@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Raven — Multi-Folder Download Manager",
+  "version": "1.0.0",
+  "description": "Queue up multiple downloads at once and route each one to a different folder inside your Downloads directory. Includes folder routing rules, a right-click \"download to folder\" menu, and a full download manager page.",
+  "minimum_chrome_version": "102",
+  "permissions": ["downloads", "storage", "contextMenus"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Raven Downloads",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options/options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
